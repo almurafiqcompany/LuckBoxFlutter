@@ -39,7 +39,7 @@ class _IntroPageState extends State<IntroPage> {
       floatingActionButton: TextButton(
 
         onPressed: () {
-          Get.offAll(() =>  SignUpScreen() ); //NavigationBottom()); //  //
+          Get.offAll(() =>  NavigationBottom()); //SignUpScreen() ); // //  //
          print("object") ;
         },
         style: TextButton.styleFrom(

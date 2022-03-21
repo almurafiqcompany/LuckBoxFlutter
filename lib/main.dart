@@ -1,6 +1,5 @@
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
-import 'package:test_bloc/screens/view/home_page.dart';
 
 
 import 'controller/gender_selection_controller.dart';
