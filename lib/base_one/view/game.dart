@@ -1,9 +1,17 @@
 
-import 'dart:math';
+
 import 'dart:async';
+import 'dart:math';
+
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:get/get.dart';
+
+
+import '../../routes/routes.dart';
+
+
+
 enum Direction { up, down, left, right }
 class Game extends StatefulWidget {
   const Game({Key? key}) : super(key: key);
@@ -14,6 +22,13 @@ class Game extends StatefulWidget {
 
 class _GameState extends State<Game> {
 
+
+  // Down or right - head val is grater than other
+  //up or left - head val is less than other
+  // head refers to last element of array
+
+  bool x=true ;
+
   List<int> snakePosition = [24, 44, 64];
   int foodLocation = Random().nextInt(700);
   bool start = false;
@@ -22,8 +37,8 @@ class _GameState extends State<Game> {
   startGame() {
     start = true;
     snakePosition = [24, 44, 64];
-    Timer.periodic(const Duration(milliseconds: 200), (timer) async{
-     updateSnake();
+    Timer.periodic(const Duration(milliseconds: 300), (timer) {
+      updateSnake();
       if (gameOver()) {
         gameOverAlert();
         timer.cancel();
@@ -31,8 +46,8 @@ class _GameState extends State<Game> {
     });
   }
 
-  updateSnake() async{
-   setState(() {
+  updateSnake() {
+    setState(() {
       switch (direction) {
         case Direction.down:
           if (snakePosition.last > 740) {
@@ -110,17 +125,12 @@ class _GameState extends State<Game> {
     );
   }
 
+
+
   @override
   Widget build(BuildContext context) {
     return Scaffold(
       backgroundColor: Colors.white,
-      appBar: AppBar(
-        elevation: 0.0,
-        backgroundColor: Colors.white,
-        leading: IconButton(onPressed: (){
-          Get.back() ;
-        }, icon: const Icon(Icons.arrow_back , color: Colors.black,)),
-      ),
       body: SafeArea(
         child: GestureDetector(
           onVerticalDragUpdate: (details) {
@@ -162,16 +172,30 @@ class _GameState extends State<Game> {
           ),
         ),
       ),
-      floatingActionButton: FloatingActionButton(
-        backgroundColor: Colors.white,
+      floatingActionButton: x ? FloatingActionButton(
+        backgroundColor: Colors.red,
         onPressed: () {
           startGame();
+          x=false;
         },
         child: start
-            ? Text((snakePosition.length - 3 ).toString() , style: const TextStyle(color: Colors.black))
-            : const Text('Start' , style: TextStyle(color: Colors.black , fontWeight: FontWeight.bold),),
+            ? Text((snakePosition.length - 3).toString() ,  style: const TextStyle(color: Colors.black))
+            : const Text('Start' , style: TextStyle(color: Colors.black),),
+      )
+
+          : FloatingActionButton(
+          backgroundColor: Colors.grey,
+          elevation: 0.0,
+          onPressed: (){
+            gameOver() ;
+
+            Get.back() ;
+          print("Back to Home page");
+      } ,
+          child: const Text('Exit' , style: TextStyle(color: Colors.black),
       ),
+
+    )
     );
   }
 }
-

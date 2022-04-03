@@ -5,6 +5,7 @@ class GenderSelectedController extends GetxController{
 
   onChangeGender(var gender){
     selectedGender.value = gender ;
+    update() ;
   }
 
 

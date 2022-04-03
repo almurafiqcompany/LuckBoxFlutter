@@ -1,39 +1,28 @@
-import 'dart:io';
 import 'package:flutter/gestures.dart';
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
-import 'package:image_picker/image_picker.dart';
 
-import '../../constant.dart';
-import '../../controller/gender_selection_controller.dart';
-import '../../controller/sign_up_controller.dart';
-import '../login.dart';
 
-class SignUpScreen extends StatefulWidget {
-  const SignUpScreen({Key? key}) : super(key: key);
+import '../logic/controllers/login_controller.dart';
+import '../routes/routes.dart';
+
+/*
+class SignUpScreenView extends StatefulWidget {
+  const SignUpScreenView({Key? key}) : super(key: key);
 
   @override
-  _SignUpScreenState createState() => _SignUpScreenState();
+  _SignUpScreenViewState createState() => _SignUpScreenViewState();
 }
 
-class _SignUpScreenState extends State<SignUpScreen>
+class _SignUpScreenViewState extends State<SignUpScreenView>
     with TickerProviderStateMixin {
+  RegisterController controller = Get.find();
+
   late AnimationController _animationController;
 
   late Animation<double> _animation;
-  TextEditingController _fullNameTextEditingController =
-      TextEditingController(text: '');
-  TextEditingController _emailTextEditingController =
-      TextEditingController(text: '');
-  TextEditingController _passwordTextEditingController =
-      TextEditingController(text: '');
 
-  TextEditingController _phoneTextEditingController =
-      TextEditingController(text: '');
-  TextEditingController _cityTextEditingController =
-      TextEditingController(text: '');
-
-  GenderSelectedController genderSelectedController = Get.find();
+  // GenderSelectedController genderSelectedController = Get.find();
 
   final FocusNode _fullNameFocusNode = FocusNode();
 
@@ -50,26 +39,18 @@ class _SignUpScreenState extends State<SignUpScreen>
   File? pickedFile;
   ImagePicker imagePicker = ImagePicker();
 
-  SignUpController signUpController = Get.put(SignUpController());
+  //SignUpController signUpController = Get.put(SignUpController());
 
-  SignUpController signUpControllers = Get.find();
+  //SignUpController signUpControllers = Get.find();
 
   bool _obscureText = true;
   bool _obscureTexts = true;
-
-  final _globalKey = GlobalKey<FormState>();
 
   bool _isLoading = false;
   String? url;
 
   @override
   void dispose() {
-    _animationController.dispose();
-    _fullNameTextEditingController.dispose();
-    _emailTextEditingController.dispose();
-    _passwordTextEditingController.dispose();
-    _phoneTextEditingController.dispose();
-    _cityTextEditingController.dispose();
     _fullNameFocusNode.dispose();
     _emailFocusNode.dispose();
     _passwordFocusNode.dispose();
@@ -135,7 +116,8 @@ class _SignUpScreenState extends State<SignUpScreen>
                       height: size.height * 0.01,
                     ),
                     Form(
-                        key: _globalKey,
+                        key: controller.globalKey,
+                        autovalidateMode: AutovalidateMode.onUserInteraction,
                         child: Column(
                           children: [
                             ///Full name
@@ -148,13 +130,17 @@ class _SignUpScreenState extends State<SignUpScreen>
                                     onEditingComplete: () =>
                                         FocusScope.of(context)
                                             .requestFocus(_emailFocusNode),
+                                    onSaved: (value) {
+                                      controller.name = value!;
+                                    },
                                     validator: (value) {
                                       if (value!.isEmpty) {
                                         return 'Field can\'t be missing';
                                       }
                                       return null;
                                     },
-                                    controller: _fullNameTextEditingController,
+                                    controller: controller
+                                        .fullNameTextEditingController,
                                     style: const TextStyle(color: Colors.white),
                                     decoration: InputDecoration(
                                         hintText: 'Full name',
@@ -182,6 +168,8 @@ class _SignUpScreenState extends State<SignUpScreen>
                                   ),
                                   flex: 3,
                                 ),
+
+                                /*
                                 Flexible(
                                     child: Obx(
                                   () => Stack(
@@ -247,6 +235,8 @@ class _SignUpScreenState extends State<SignUpScreen>
                                     ],
                                   ),
                                 )),
+
+                                 */
                               ],
                             ),
                             const SizedBox(
@@ -260,12 +250,12 @@ class _SignUpScreenState extends State<SignUpScreen>
                               onEditingComplete: () => FocusScope.of(context)
                                   .requestFocus(_passwordFocusNode),
                               validator: (value) {
-                                if (value!.isEmpty || !value.contains('@')) {
-                                  return 'Please enter a valid address';
-                                }
-                                return null;
+                                return controller.validateEmail(value!);
                               },
-                              controller: _emailTextEditingController,
+                              onSaved: (value) {
+                                controller.email = value!;
+                              },
+                              controller: controller.emailTextEditingController,
                               style: const TextStyle(color: Colors.white),
                               keyboardType: TextInputType.emailAddress,
                               decoration: InputDecoration(
@@ -302,13 +292,14 @@ class _SignUpScreenState extends State<SignUpScreen>
                               onEditingComplete: () => FocusScope.of(context)
                                   .requestFocus(_phoneFocusNode),
                               validator: (value) {
-                                if (value!.isEmpty || value.length < 7) {
-                                  return 'Please enter a valid password';
-                                }
-                                return null;
+                                return controller.validatePassword(value!);
+                              },
+                              onSaved: (value) {
+                                controller.password = value!;
                               },
                               obscureText: _obscureText,
-                              controller: _passwordTextEditingController,
+                              controller:
+                                  controller.passwordTextEditingController,
                               style: const TextStyle(color: Colors.white),
                               keyboardType: TextInputType.visiblePassword,
                               decoration: InputDecoration(
@@ -363,11 +354,14 @@ class _SignUpScreenState extends State<SignUpScreen>
                                 }
                                 return null;
                               },
-                              onChanged: (val) {
-                                print(
-                                    '_phoneTextEditingController.text : ${_phoneTextEditingController.text}');
+                              onSaved: (value) {
+                                controller.phone = value!;
                               },
-                              controller: _phoneTextEditingController,
+                              onChanged: (val) {
+                                //   print(
+                                //     '_phoneTextEditingController.text : ${_phoneTextEditingController.text}');
+                              },
+                              controller: controller.phoneTextEditingController,
                               style: const TextStyle(color: Colors.white),
                               decoration: InputDecoration(
                                   prefixIcon: const Icon(
@@ -397,7 +391,7 @@ class _SignUpScreenState extends State<SignUpScreen>
                             ),
                           ],
                         )),
-
+/*
                     Container(
                       padding: const EdgeInsets.all(10),
                       child: Row(
@@ -465,6 +459,9 @@ class _SignUpScreenState extends State<SignUpScreen>
                       ),
                     ),
 
+
+ */
+
                     /// Chose city
                     GestureDetector(
                       onTap: () => _showCity(size),
@@ -474,15 +471,19 @@ class _SignUpScreenState extends State<SignUpScreen>
                           enabled: false,
                           focusNode: _cityFocusNode,
                           textInputAction: TextInputAction.done,
-                          onEditingComplete: signUp,
+                          // onEditingComplete: signUp,
                           validator: (value) {
                             if (value!.isEmpty) {
                               return 'Field can\'t be missing';
                             }
                             return null;
                           },
+                          onSaved: (value) {
+                            controller.cityTextEditingController =
+                                value! as TextEditingController;
+                          },
                           onChanged: (value) {},
-                          controller: _cityTextEditingController,
+                          controller: controller.cityTextEditingController,
                           style: const TextStyle(color: Colors.white),
                           decoration: InputDecoration(
                               hintText: 'Chose city',
@@ -505,7 +506,7 @@ class _SignUpScreenState extends State<SignUpScreen>
                     const SizedBox(
                       height: 16,
                     ),
-                    _isLoading
+                    Obx(() => controller.isLoading.value == true
                         ? Center(
                             child: Container(
                               width: 70,
@@ -513,34 +514,41 @@ class _SignUpScreenState extends State<SignUpScreen>
                               child: const CircularProgressIndicator(),
                             ),
                           )
-                        : MaterialButton(
-                            onPressed: signUp,
-                            color: Colors.white,
-                            elevation: 10,
-                            shape: RoundedRectangleBorder(
-                                borderRadius: BorderRadius.circular(16),
-                                side: BorderSide.none),
-                            child: Row(
-                              mainAxisAlignment: MainAxisAlignment.center,
-                              children: const [
-                                Padding(
-                                  padding: EdgeInsets.symmetric(vertical: 14),
-                                  child: Text('Register',
-                                      style: TextStyle(
-                                          color: Colors.red,
-                                          fontSize: 20,
-                                          fontWeight: FontWeight.bold)),
-                                ),
-                                SizedBox(
-                                  width: 10,
-                                ),
-                                Icon(
-                                  Icons.person_add,
-                                  color: Colors.white,
-                                )
-                              ],
-                            ),
+                        : const Text('') ),
+                    const SizedBox(
+                      height: 16,
+                    ),
+                    MaterialButton(
+                      // onPressed: signUp,
+                      onPressed: () {
+                        controller.doRegister() ;
+                      },
+                      color: Colors.white,
+                      elevation: 10,
+                      shape: RoundedRectangleBorder(
+                          borderRadius: BorderRadius.circular(16),
+                          side: BorderSide.none),
+                      child: Row(
+                        mainAxisAlignment: MainAxisAlignment.center,
+                        children: const [
+                          Padding(
+                            padding: EdgeInsets.symmetric(vertical: 14),
+                            child: Text('Register',
+                                style: TextStyle(
+                                    color: Colors.red,
+                                    fontSize: 20,
+                                    fontWeight: FontWeight.bold)),
                           ),
+                          SizedBox(
+                            width: 10,
+                          ),
+                          Icon(
+                            Icons.person_add,
+                            color: Colors.white,
+                          )
+                        ],
+                      ),
+                    ) ,
                     const SizedBox(
                       height: 16,
                     ),
@@ -556,16 +564,7 @@ class _SignUpScreenState extends State<SignUpScreen>
                         const TextSpan(text: '   '),
                         TextSpan(
                             recognizer: TapGestureRecognizer()
-                              ..onTap = () => Get.to(const LoginScreen()),
-                            /*
-                                    Navigator.pushReplacement(
-                                    context,
-                                    MaterialPageRoute(
-                                        builder: (context) => const LoginScreen())),
-
-
-                                     */
-
+                              ..onTap = () => Get.to(const LoginScreenView()),
                             text: 'Login',
                             style: TextStyle(
                                 color: Colors.blue.shade300,
@@ -602,8 +601,8 @@ class _SignUpScreenState extends State<SignUpScreen>
                     return InkWell(
                       onTap: () {
                         setState(() {
-                          _cityTextEditingController.text =
-                              Constants.city[index];
+                          //  _cityTextEditingController.text =
+                          Constants.city[index];
                         });
                         Navigator.pop(context);
                       },
@@ -641,6 +640,7 @@ class _SignUpScreenState extends State<SignUpScreen>
         });
   }
 
+/*
   Widget bottomSheet(BuildContext context) {
     Size size = MediaQuery.of(context).size;
     return Container(
@@ -722,6 +722,7 @@ class _SignUpScreenState extends State<SignUpScreen>
     );
   }
 
+
   void signUp() {
     final _isValid = _globalKey.currentState!.validate();
     if (_isValid) {
@@ -738,13 +739,14 @@ class _SignUpScreenState extends State<SignUpScreen>
           _emailTextEditingController.text,
           _phoneTextEditingController.text,
           _passwordTextEditingController.text,
-          genderSelectedController.selectedGender.value,
-          _cityTextEditingController.text
+         _cityTextEditingController.text ,
       );
     } else {
       return null;
     }
   }
+
+
 
   void takePhoto(ImageSource source) async {
     final pickedImage =
@@ -754,4 +756,498 @@ class _SignUpScreenState extends State<SignUpScreen>
     Get.back();
     //print(pickedFile);
   }
+
+ */
+}
+
+
+ */
+
+class LoginView extends GetView <LoginController>{
+  const LoginView({Key? key}) : super(key: key);
+
+  @override
+  Widget build(BuildContext context) {
+    Size size = MediaQuery.of(context).size;
+    return Scaffold(
+        backgroundColor: Colors.redAccent,
+        body: SafeArea(
+          child: Stack(
+            //alignment: Alignment.center,
+            children: [
+              Padding(
+                padding: const EdgeInsets.symmetric(horizontal: 10),
+                child: ListView(
+                  children: [
+                    Container(
+                      width: MediaQuery.of(context).size.width,
+                      height: MediaQuery.of(context).size.height * 0.18,
+                      padding: const EdgeInsets.only(
+                        top: 8,
+                      ),
+                      decoration: const BoxDecoration(
+                        image: DecorationImage(
+                          image: AssetImage('assets/red.JPG'),
+                        ),
+                      ),
+                    ),
+
+                    const Text(
+                      "Register",
+                      style: TextStyle(
+                          fontSize: 30,
+                          color: Colors.white,
+                          fontWeight: FontWeight.bold),
+                    ),
+
+                    SizedBox(
+                      height: size.height * 0.01,
+                    ),
+                    Form(
+                        key: controller.loginGlobalKey,
+                        autovalidateMode: AutovalidateMode.onUserInteraction,
+                        child: Column(
+                          children: [
+                            ///Full name
+
+                            const SizedBox(
+                              height: 10,
+                            ),
+
+                            ///Email
+                            TextFormField(
+                              //   focusNode: _emailFocusNode,
+                              textInputAction: TextInputAction.next,
+                              // onEditingComplete: () => FocusScope.of(context)
+                              //   .requestFocus(_passwordFocusNode),
+                              validator: (value) {
+                                return controller.validateEmail(value!);
+                              },
+                              onSaved: (value) {
+                                controller.email = value!;
+                              },
+                              controller: controller.emailTextEditingController,
+                              style: const TextStyle(color: Colors.white),
+                              keyboardType: TextInputType.emailAddress,
+                              decoration: InputDecoration(
+                                  hintText: 'Email',
+                                  border: OutlineInputBorder(
+                                      borderRadius: BorderRadius.circular(20)),
+                                  prefixIcon: const Icon(
+                                    Icons.email_outlined,
+                                    color: Colors.white,
+                                  ),
+                                  hintStyle:
+                                  const TextStyle(color: Colors.white),
+                                  enabledBorder: OutlineInputBorder(
+                                      borderRadius: BorderRadius.circular(20),
+                                      borderSide: const BorderSide(
+                                          color: Colors.white)),
+                                  focusedBorder: OutlineInputBorder(
+                                      borderRadius: BorderRadius.circular(20),
+                                      borderSide: BorderSide(
+                                          color: Colors.pink.shade700)),
+                                  errorBorder: OutlineInputBorder(
+                                      borderRadius: BorderRadius.circular(20),
+                                      borderSide:
+                                      const BorderSide(color: Colors.red))),
+                            ),
+                            const SizedBox(
+                              height: 10,
+                            ),
+
+                            ///Password
+                            TextFormField(
+                              //   focusNode: _passwordFocusNode,
+                              textInputAction: TextInputAction.next,
+                              // onEditingComplete: () => FocusScope.of(context)
+                              //   .requestFocus(_phoneFocusNode),
+                              validator: (value) {
+                                return controller.validatePassword(value!);
+                              },
+                              onSaved: (value) {
+                                controller.password = value!;
+                              },
+                              //  obscureText: _obscureText,
+                              controller:
+                              controller.passwordTextEditingController,
+                              style: const TextStyle(color: Colors.white),
+                              keyboardType: TextInputType.visiblePassword,
+                              decoration: InputDecoration(
+                                  prefixIcon: const Icon(
+                                    Icons.lock,
+                                    color: Colors.white,
+                                  ),
+                                  suffixIcon: GestureDetector(
+                                    onTap: () {
+                                      //        setState(() {
+                                      //        _obscureText = !_obscureText;
+                                      //   });
+                                    },
+                                    child: const Icon(Icons.visibility_off ,
+                                      // _obscureText
+                                      //  ? Icons.visibility
+                                      //: Icons.visibility_off,
+                                      color: Colors.white,
+                                    ),
+                                  ),
+                                  hintText: 'Password',
+                                  hintStyle:
+                                  const TextStyle(color: Colors.white),
+                                  enabledBorder: OutlineInputBorder(
+                                      borderRadius: BorderRadius.circular(20),
+                                      borderSide: const BorderSide(
+                                          color: Colors.white)),
+                                  focusedBorder: OutlineInputBorder(
+                                      borderRadius: BorderRadius.circular(20),
+                                      borderSide: BorderSide(
+                                          color: Colors.pink.shade700)),
+                                  errorBorder: OutlineInputBorder(
+                                      borderRadius: BorderRadius.circular(20),
+                                      borderSide:
+                                      const BorderSide(color: Colors.red))),
+                            ),
+
+                            const SizedBox(
+                              height: 10,
+                            ),
+
+                            const SizedBox(
+                              height: 10,
+                            ),
+                          ],
+                        )),
+/*
+                    Container(
+                      padding: const EdgeInsets.all(10),
+                      child: Row(
+                        mainAxisAlignment: MainAxisAlignment.spaceEvenly,
+                        children: [
+                          const Expanded(
+                              child: Text(
+                            'Gender',
+                            style: TextStyle(
+                                fontSize: 15,
+                                fontWeight: FontWeight.bold,
+                                color: Colors.white),
+                          )),
+                          Row(
+                            children: [
+                              Obx(
+                                () => Radio(
+                                  value: 'Male',
+                                  groupValue: genderSelectedController
+                                      .selectedGender.value,
+                                  onChanged: (value) {
+                                    genderSelectedController
+                                        .onChangeGender(value);
+                                  },
+                                  activeColor: Colors.white,
+                                  fillColor:
+                                      MaterialStateProperty.all(Colors.white),
+                                ),
+                              ),
+                              const Text(
+                                'Male',
+                                style: TextStyle(
+                                    fontSize: 15,
+                                    fontWeight: FontWeight.bold,
+                                    color: Colors.white),
+                              )
+                            ],
+                          ),
+                          Row(
+                            children: [
+                              Obx(
+                                () => Radio(
+                                  value: 'Female',
+                                  groupValue: genderSelectedController
+                                      .selectedGender.value,
+                                  onChanged: (value) {
+                                    genderSelectedController
+                                        .onChangeGender(value);
+                                  },
+                                  activeColor: Colors.white,
+                                  fillColor:
+                                      MaterialStateProperty.all(Colors.white),
+                                ),
+                              ),
+                              const Text(
+                                'Female',
+                                style: TextStyle(
+                                    fontSize: 15,
+                                    fontWeight: FontWeight.bold,
+                                    color: Colors.white),
+                              )
+                            ],
+                          )
+                        ],
+                      ),
+                    ),
+
+
+ */
+
+
+
+                    const SizedBox(
+                      height: 16,
+                    ),
+                    Obx(() => controller.isLoading.value == true
+                        ? Center(
+                      child: Container(
+                        width: 70,
+                        height: 70,
+                        child: const CircularProgressIndicator(),
+                      ),
+                    )
+                        : const Text('') ),
+                    const SizedBox(
+                      height: 16,
+                    ),
+                    MaterialButton(
+                      // onPressed: signUp,
+                      onPressed: () {
+                       // controller.doLogin() ;
+                      },
+                      color: Colors.white,
+                      elevation: 10,
+                      shape: RoundedRectangleBorder(
+                          borderRadius: BorderRadius.circular(16),
+                          side: BorderSide.none),
+                      child: Row(
+                        mainAxisAlignment: MainAxisAlignment.center,
+                        children: const [
+                          Padding(
+                            padding: EdgeInsets.symmetric(vertical: 14),
+                            child: Text('Register',
+                                style: TextStyle(
+                                    color: Colors.red,
+                                    fontSize: 20,
+                                    fontWeight: FontWeight.bold)),
+                          ),
+                          SizedBox(
+                            width: 10,
+                          ),
+                          Icon(
+                            Icons.person_add,
+                            color: Colors.white,
+                          )
+                        ],
+                      ),
+                    ) ,
+                    const SizedBox(
+                      height: 16,
+                    ),
+                    Center(
+                      child: RichText(
+                          text: TextSpan(children: [
+                            const TextSpan(
+                                text: 'Already have an account ?',
+                                style: TextStyle(
+                                    color: Colors.white,
+                                    fontSize: 16,
+                                    fontWeight: FontWeight.bold)),
+                            const TextSpan(text: '   '),
+                            TextSpan(
+                                recognizer: TapGestureRecognizer()
+                                  ..onTap = () =>  Get.offAllNamed(AppRoutes.register),
+                                text: 'Register',
+                                style: TextStyle(
+                                    color: Colors.blue.shade300,
+                                    decoration: TextDecoration.underline,
+                                    fontSize: 16,
+                                    fontWeight: FontWeight.bold))
+                          ])),
+                    ) ,
+
+                  ],
+                ),
+              )
+            ],
+          ),
+        ));
+  }
+/*
+  void _showCity(size) {
+    showDialog(
+        context: context,
+        builder: (_) {
+          return AlertDialog(
+            title: Text(
+              'Chose city ',
+              style: TextStyle(color: Colors.pink.shade300, fontSize: 20),
+            ),
+            content: Container(
+              width: size.width * 0.9,
+              decoration:
+              BoxDecoration(borderRadius: BorderRadius.circular(40)),
+              child: ListView.builder(
+                  shrinkWrap: true,
+                  itemCount: Constants.city.length,
+                  itemBuilder: (_, index) {
+                    return InkWell(
+                      onTap: () {
+                        setState(() {
+                          //  _cityTextEditingController.text =
+                          Constants.city[index];
+                        });
+                        Navigator.pop(context);
+                      },
+                      child: Row(
+                        children: [
+                          Icon(
+                            Icons.check_circle_rounded,
+                            color: Colors.red[200],
+                          ),
+                          Padding(
+                            padding: const EdgeInsets.all(8.0),
+                            child: Text(
+                              Constants.city[index],
+                              style: const TextStyle(
+                                  color: Color(0xFF00325A),
+                                  // fontWeight: FontWeight.bold,
+                                  fontSize: 20,
+                                  fontStyle: FontStyle.italic),
+                            ),
+                          ),
+                        ],
+                      ),
+                    );
+                  }),
+            ),
+            actions: [
+              TextButton(
+                onPressed: () {
+                  Navigator.canPop(context) ? Navigator.pop(context) : null;
+                },
+                child: const Text('Close'),
+              ),
+            ],
+          );
+        });
+  }
+
+ */
+
+/*
+  Widget bottomSheet(BuildContext context) {
+    Size size = MediaQuery.of(context).size;
+    return Container(
+      width: double.infinity,
+      height: size.height * 0.2,
+      margin: const EdgeInsets.symmetric(vertical: 20, horizontal: 10),
+      child: Column(
+        children: [
+          const Text(
+            'Please choose an option',
+            style: TextStyle(
+              fontWeight: FontWeight.bold,
+              fontSize: 20,
+            ),
+          ),
+          const SizedBox(
+            height: 30,
+          ),
+          Row(
+            mainAxisAlignment: MainAxisAlignment.center,
+            children: [
+              InkWell(
+                child: Column(
+                  mainAxisAlignment: MainAxisAlignment.center,
+                  children: const [
+                    Icon(
+                      Icons.camera_alt,
+                      color: Colors.redAccent,
+                    ),
+                    SizedBox(
+                      height: 8,
+                    ),
+                    Text(
+                      'Camera',
+                      style: TextStyle(
+                        color: Colors.redAccent,
+                        fontSize: 20,
+                        fontWeight: FontWeight.bold,
+                      ),
+                    )
+                  ],
+                ),
+                onTap: () {
+                  takePhoto(ImageSource.camera);
+                },
+              ),
+              const SizedBox(
+                width: 80,
+              ),
+              InkWell(
+                child: Column(
+                  mainAxisAlignment: MainAxisAlignment.center,
+                  children: const [
+                    Icon(
+                      Icons.image,
+                      color: Colors.redAccent,
+                    ),
+                    SizedBox(
+                      height: 8,
+                    ),
+                    Text(
+                      'Gallery',
+                      style: TextStyle(
+                        fontSize: 20,
+                        fontWeight: FontWeight.bold,
+                        color: Colors.redAccent,
+                      ),
+                    )
+                  ],
+                ),
+                onTap: () {
+                  takePhoto(ImageSource.gallery);
+                },
+              )
+            ],
+          )
+        ],
+      ),
+    );
+  }
+
+
+  void signUp() {
+    final _isValid = _globalKey.currentState!.validate();
+    if (_isValid) {
+      //  print(_fullNameTextEditingController.text) ;
+      //  print(_emailTextEditingController.text) ;
+      //  print(_phoneTextEditingController.text) ;
+      //  print(_passwordTextEditingController.text) ;
+      //  print(_positionCPTextEditingController.text) ;
+      //  print(genderSelectedController.selectedGender.value) ;
+      //  print(signUpController.profilePicPath.value) ;
+
+      signUpController.signUpUser(
+          _fullNameTextEditingController.text,
+          _emailTextEditingController.text,
+          _phoneTextEditingController.text,
+          _passwordTextEditingController.text,
+         _cityTextEditingController.text ,
+      );
+    } else {
+      return null;
+    }
+  }
+
+
+
+  void takePhoto(ImageSource source) async {
+    final pickedImage =
+        await imagePicker.pickImage(source: source, imageQuality: 100);
+    pickedFile = File(pickedImage!.path);
+    signUpController.setProfileImagePath(pickedFile!.path);
+    Get.back();
+    //print(pickedFile);
+  }
+
+ */
+
+
 }

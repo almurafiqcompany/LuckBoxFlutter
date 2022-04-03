@@ -1,29 +1,36 @@
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
+import 'package:google_mobile_ads/google_mobile_ads.dart';
+import 'package:test_bloc/controller/gender_selection_controller.dart';
+import 'package:test_bloc/routes/routes.dart';
+
+import 'base_one/view/home_page.dart';
 
 
-import 'controller/gender_selection_controller.dart';
-import 'screens/view/intro_screen.dart';
 
-
-
-void main() {
-  runApp( MyApp());
+void main() async{
+  WidgetsFlutterBinding.ensureInitialized();
+  MobileAds.instance.initialize();
+  runApp(  MyApp());
 }
 
 class MyApp extends StatelessWidget {
-   MyApp({Key? key}) : super(key: key);
-  GenderSelectedController genderSelectedController =
-  Get.put(GenderSelectedController());
+  GenderSelectedController genderSelectedController = Get.put(GenderSelectedController()) ;
+    MyApp({Key? key}) : super(key: key);
   @override
   Widget build(BuildContext context) {
-    return GetMaterialApp(
-      debugShowCheckedModeBanner: false,
-      theme: ThemeData(
-        primarySwatch: Colors.blue,
-      ),
-      home: const IntroPage(),
+    return
 
-    );
+      GetMaterialApp(
+      title: 'LuckBox',
+      initialRoute: AppRoutes.register,  //IntroPage() ,//AppRoutes.navigate,
+      getPages: AppRoutes.routes,
+      debugShowCheckedModeBanner: false,
+     // home: const IntroPage() ,
+    )
+
+
+
+    ;
   }
 }
