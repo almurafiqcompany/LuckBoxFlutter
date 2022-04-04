@@ -10,46 +10,39 @@ class AuthServices {
 
   static var client = http.Client();
 
-  static Future register(
-      {required name,required email,required password,required phone,required governate}) async {
-    var response =   await client.post(
+  static void register(
+      {required name,
+      required email,
+      required password,
+      required phone,
+      required governate}) async {
+    var response = await client.post(
       Uri.parse('$baseApi/register'),
-      headers: {'Content-Type ': 'application/json'},
-      body: jsonEncode(<String , String > {
-        'name' : name ,
-        'email' : email ,
-        'password' : password ,
-        'phone' : phone ,
-        'governate' : governate ,}) ,
-    );
-    print('${response} youssssssssef tarek 874874844') ;
+      body: {
+        'name': name,
+        'email': email,
+        'password': password,
+        'phone': phone,
+        'governate': governate,
+      },
+    ).then((value) {
+      print('hamouda');
+    }).catchError((error) {
+      print(error);
+    });
+    // print('${response} youssssssssef tarek 874874844') ;
 
-    // if(response.statusCode == 200){
-    //   var startOb = response.body ;
-    //   dynamic user = userFromJson(str) ;
-    //
-    //  return  user;
-    //
+    // print('${response.body} youssssssssef tarek 874874844') ;
+
+    // if(response.statusCode == 200) {
+    //   var startObjects = response.body;
+    //   var user = userFromJson(startObjects) ;
+    //   print('${user.message} youssssssssef tarek 874874844') ;
+    //   return user ;
+    // }else{
+    //   return null ;
     // }
-
-    print('${response.body} youssssssssef tarek 874874844') ;
-
-    if(response.statusCode == 200) {
-      var startObjects = response.body;
-      var user = userFromJson(startObjects) ;
-      print('${user.message} youssssssssef tarek 874874844') ;
-      return user ;
-    }else{
-      return null ;
-    }
-
-
   }
-
-
-
-
-
 
   static login({required email, password}) async {
     var response = await client.post(
@@ -63,7 +56,7 @@ class AuthServices {
 
     if (response.statusCode == 200) {
       var stringObject = response.body;
-       var user = userFromJson(stringObject);
+      var user = userFromJson(stringObject);
       userRegisterModel = UserRegisterModel.fromJson(response.body as dynamic)
           .status as UserRegisterModel;
       return userRegisterModel.toString();
