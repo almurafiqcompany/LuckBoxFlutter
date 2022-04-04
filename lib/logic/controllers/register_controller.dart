@@ -63,32 +63,32 @@ class RegisterController extends GetxController {
 
     // if (isValidate) {
     //   isLoading(true);
-    //   try {
-    var data = AuthServices.register(
-        name: fullNameTextEditingController.text,
-        email: emailTextEditingController.text,
-        password: passwordTextEditingController.text,
-        phone: phoneTextEditingController.text,
-        governate: governateTextEditingController.text);
+    try {
+      var data = AuthServices.register(
+          name: fullNameTextEditingController.text,
+          email: emailTextEditingController.text,
+          password: passwordTextEditingController.text,
+          phone: phoneTextEditingController.text,
+          governate: governateTextEditingController.text);
 
-    // if (data != null) {
-    //   await storage.write(key: 'user', value: data.toString());
-    //   await storage.write(key: 'token', value: data.toString());
-    //   registerGlobalKey.currentState!.save();
-    // } else {
-    //   Get.snackbar('register', 'problem in  register');
-    // }
+      // if (data != null) {
+      //   await storage.write(key: 'user', value: data.toString());
+      //   await storage.write(key: 'token', value: data.toString());
+      //   registerGlobalKey.currentState!.save();
+      // } else {
+      //   Get.snackbar('register', 'problem in  register');
+      // }
 
-    //   print('${fullNameTextEditingController.text} 33') ;
+      //   print('${fullNameTextEditingController.text} 33') ;
 
-    // await  storage.write(key: 'name', value: data.toString()) ;
-    // print('${fullNameTextEditingController.text}22111111111') ;
-    // await  storage.write(key: 'token', value: data.toString()) ;
-    // print('${fullNameTextEditingController.text}2555555555552') ;
+      // await  storage.write(key: 'name', value: data.toString()) ;
+      // print('${fullNameTextEditingController.text}22111111111') ;
+      // await  storage.write(key: 'token', value: data.toString()) ;
+      // print('${fullNameTextEditingController.text}2555555555552') ;
 
-    // } finally {
-    //   isLoading(false);
-    //   print('${fullNameTextEditingController.text}666666');
-    // }
+    } finally {
+      // isLoading(false);
+      print('${fullNameTextEditingController.text}666666');
+    }
   }
 }
