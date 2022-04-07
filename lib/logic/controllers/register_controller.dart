@@ -4,7 +4,7 @@ import 'package:test_bloc/database/models/model_two.dart';
 import 'package:test_bloc/database/services/auth_services.dart';
 import 'package:flutter_secure_storage/flutter_secure_storage.dart';
 
-
+import '../../routes/routes.dart';
 
 class RegisterController extends GetxController {
   var isLoading = false.obs;
@@ -22,17 +22,13 @@ class RegisterController extends GetxController {
 
   late TextEditingController governateTextEditingController;
 
-  String name = '',
-      email = '',
-      password = '',
-      phone = '',
-      governate = '';
+  String name = '', email = '', password = '', phone = '', governate = '';
 
   @override
   void onInit() {
     fullNameTextEditingController = TextEditingController();
     emailTextEditingController = TextEditingController();
-     passwordTextEditingController = TextEditingController();
+    passwordTextEditingController = TextEditingController();
     phoneTextEditingController = TextEditingController();
     governateTextEditingController = TextEditingController();
     super.onInit();
@@ -64,44 +60,39 @@ class RegisterController extends GetxController {
     }
   }
 
-
   Future doRegister() async {
-    bool isValidate = registerGlobalKey.currentState!.validate();
+  bool isValidate = registerGlobalKey.currentState!.validate();
 
     if (isValidate) {
       isLoading(true);
-      try {
-        var data = AuthServices.register(
-            name: fullNameTextEditingController.text,
-            email: emailTextEditingController.text,
-            password: passwordTextEditingController.text,
-            phone: phoneTextEditingController.text,
-            governate: governateTextEditingController.text
-        );
+    try {
+      var data = AuthServices.register(
+          name: fullNameTextEditingController.text,
+          email: emailTextEditingController.text,
+          password: passwordTextEditingController.text,
+          phone: phoneTextEditingController.text,
+          governate: governateTextEditingController.text);
+     // print('${fullNameTextEditingController.text} 33') ;
+      // if (data != null) {
+      //   await storage.write(key: 'user', value: data.toString());
+      //   await storage.write(key: 'token', value: data.toString());
+      //   registerGlobalKey.currentState!.save();
+      // } else {
+      //   Get.snackbar('register', 'problem in  register');
+      // }
 
-        if (data != null) {
-          await storage.write(key: 'user', value: data.toString());
-          await storage.write(key: 'token', value: data.toString());
-          registerGlobalKey.currentState!.save();
-        } else {
-          Get.snackbar('register', 'problem in  register');
-        }
+      //   print('${fullNameTextEditingController.text} 33') ;
 
+      // await  storage.write(key: 'name', value: data.toString()) ;
+      // print('${fullNameTextEditingController.text}22111111111') ;
+      // await  storage.write(key: 'token', value: data.toString()) ;
+      // print('${fullNameTextEditingController.text}2555555555552') ;
+      print('${fullNameTextEditingController.text}66666644444444444');
+return data ;
+   } finally {
+      isLoading(false);
+      print('Error ! you can not fech data ');
 
-        //   print('${fullNameTextEditingController.text} 33') ;
-
-
-        // await  storage.write(key: 'name', value: data.toString()) ;
-        // print('${fullNameTextEditingController.text}22111111111') ;
-        // await  storage.write(key: 'token', value: data.toString()) ;
-        // print('${fullNameTextEditingController.text}2555555555552') ;
-
-      } finally {
-        isLoading(false);
-        print('${fullNameTextEditingController.text}666666');
-      }
     }
   }
-
-
-}
+} }

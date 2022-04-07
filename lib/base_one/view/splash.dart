@@ -18,7 +18,7 @@ class _SplashState extends State<Splash> {
   void initState() {
     Future.delayed(const Duration(seconds: 5) , (){
       if(authController.isAuth()) {
-        Get.toNamed(AppRoutes.profile);
+        Get.offAndToNamed(AppRoutes.navigate);
       }else{
         Get.toNamed(AppRoutes.register);
 

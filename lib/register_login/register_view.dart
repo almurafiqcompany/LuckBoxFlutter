@@ -2,21 +2,26 @@ import 'dart:io';
 import 'package:flutter/gestures.dart';
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
-
+import 'package:test_bloc/logic/controllers/auth_controller.dart';
 
 import '../constant.dart';
 import '../logic/controllers/register_controller.dart';
 import '../routes/routes.dart';
 
-
-class RegisterView extends GetView <RegisterController>{
+class RegisterView extends GetView<RegisterController> {
   RegisterView({Key? key}) : super(key: key);
 
-
+  AuthController authController = Get.put(AuthController()) ;
+  bool _obscureText = false ;
   @override
   Widget build(BuildContext context) {
     Size size = MediaQuery.of(context).size;
     return Scaffold(
+        // floatingActionButton: FloatingActionButton(
+        //     onPressed: () {
+        //       controller.doRegister();
+        //     },
+        //     child: Icon(Icons.add)),
         backgroundColor: Colors.redAccent,
         body: SafeArea(
           child: Stack(
@@ -61,7 +66,6 @@ class RegisterView extends GetView <RegisterController>{
                                 Flexible(
                                   child: TextFormField(
                                     textInputAction: TextInputAction.next,
-
                                     onSaved: (value) {
                                       controller.name = value!;
                                     },
@@ -100,8 +104,6 @@ class RegisterView extends GetView <RegisterController>{
                                   ),
                                   flex: 3,
                                 ),
-
-
                               ],
                             ),
                             const SizedBox(
@@ -115,7 +117,7 @@ class RegisterView extends GetView <RegisterController>{
                               // onEditingComplete: () => FocusScope.of(context)
                               //   .requestFocus(_passwordFocusNode),
                               validator: (value) {
-                                 return controller.validateEmail(value!);
+                                return controller.validateEmail(value!);
                               },
                               onSaved: (value) {
                                 controller.email = value!;
@@ -155,12 +157,12 @@ class RegisterView extends GetView <RegisterController>{
                               //   focusNode: _passwordFocusNode,
                               textInputAction: TextInputAction.next,
                               validator: (value) {
-                                   return controller.validatePassword(value!);
+                                return controller.validatePassword(value!);
                               },
                               onSaved: (value) {
                                 controller.password = value!;
                               },
-                              //  obscureText: _obscureText,
+                                obscureText: _obscureText,
                               controller:
                               controller.passwordTextEditingController,
                               style: const TextStyle(color: Colors.white),
@@ -172,14 +174,14 @@ class RegisterView extends GetView <RegisterController>{
                                   ),
                                   suffixIcon: GestureDetector(
                                     onTap: () {
-                                      //        setState(() {
-                                      //        _obscureText = !_obscureText;
-                                      //   });
+
+                                             _obscureText = !_obscureText;
                                     },
-                                    child: const Icon(Icons.visibility_off ,
-                                      // _obscureText
-                                      //  ? Icons.visibility
-                                      //: Icons.visibility_off,
+                                    child:  Icon(
+                                     // Icons.visibility_off,
+                                      _obscureText
+                                       ? Icons.visibility
+                                      : Icons.visibility_off,
                                       color: Colors.white,
                                     ),
                                   ),
@@ -315,20 +317,18 @@ class RegisterView extends GetView <RegisterController>{
                         ],
                       ),
                     ),
-
-
  */
 
                     /// Chose city
                     GestureDetector(
-                      onTap: () => _showCity(context , size),
+                      onTap: () => _showCity(context, size),
                       child: Align(
                         alignment: Alignment.center,
                         child: TextFormField(
                           enabled: false,
                           // focusNode: _cityFocusNode,
                           textInputAction: TextInputAction.done,
-                    //      onEditingComplete: signUp,
+                          //      onEditingComplete: signUp,
                           validator: (value) {
                             if (value!.isEmpty) {
                               return 'Field can\'t be missing';
@@ -371,16 +371,17 @@ class RegisterView extends GetView <RegisterController>{
                         child: const CircularProgressIndicator(),
                       ),
                     )
-                        : const Text('') ),
+                        : const Text('')),
                     const SizedBox(
                       height: 16,
                     ),
                     MaterialButton(
                       // onPressed: signUp,
-                      onPressed: ()async {
-                        await controller.doRegister() ;
-                        print('${controller.fullNameTextEditingController.text} 12334556667') ;
-
+                      onPressed: ()  {
+                         controller.doRegister();
+                       // Get.offAllNamed(AppRoutes.navigate) ;
+                        print(
+                            '${controller.fullNameTextEditingController.text} 12334556667');
                       },
                       color: Colors.white,
                       elevation: 10,
@@ -403,11 +404,11 @@ class RegisterView extends GetView <RegisterController>{
                           ),
                           Icon(
                             Icons.person_add,
-                            color: Colors.white,
+                            color: Colors.red,
                           )
                         ],
                       ),
-                    ) ,
+                    ),
                     const SizedBox(
                       height: 16,
                     ),
@@ -440,8 +441,7 @@ class RegisterView extends GetView <RegisterController>{
         ));
   }
 
-
-  _showCity(BuildContext context , size) {
+  _showCity(BuildContext context, size) {
     showDialog(
         context: context,
         builder: (_) {
@@ -458,7 +458,6 @@ class RegisterView extends GetView <RegisterController>{
                   itemBuilder: (_, index) {
                     return InkWell(
                       onTap: () {
-
                         controller.governateTextEditingController.text =
                         Constants.city[index];
 
@@ -493,14 +492,8 @@ class RegisterView extends GetView <RegisterController>{
                 },
                 child: const Text('Close'),
               ),
-              TextButton(
-                onPressed: () {},
-                child: const Text('Cancel filter'),
-              )
             ],
           );
         });
   }
-
-
 }

@@ -1,4 +1,3 @@
-
 import 'dart:convert';
 
 UserRegisterModel userFromJson(String str) => UserRegisterModel.fromJson(json.decode(str));

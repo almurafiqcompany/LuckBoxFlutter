@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
+import 'package:test_bloc/logic/controllers/auth_controller.dart';
 import 'package:test_bloc/logic/controllers/navigation_controller.dart';
 
 import 'package:test_bloc/base_one/view/home_page.dart';
@@ -14,7 +15,7 @@ class NavigationBottom extends GetWidget <BottomNavigationController>{
 
   final screens = [
     HomePage(),
-      ProfilePage(),
+    ProfilePage(),
 
   ];
 
@@ -23,17 +24,18 @@ class NavigationBottom extends GetWidget <BottomNavigationController>{
 
   @override
   Widget build(BuildContext context) {
+    AuthController authController =Get.put(AuthController()) ;
     return GetBuilder<BottomNavigationController>(
         init: BottomNavigationController(),
-    builder: ((controller) =>Scaffold(
-      // backgroundColor: Colors.white,
-      body: IndexedStack(
-        index: controller.navigatorValue,
-        children: screens,
-      ),
+        builder: ((controller) =>Scaffold(
+          // backgroundColor: Colors.white,
+            body: IndexedStack(
+              index: controller.navigatorValue,
+              children: screens,
+            ),
 
-      bottomNavigationBar: bottomNavigationBar()
-      /*
+            bottomNavigationBar: bottomNavigationBar()
+          /*
       BottomNavigationBar(
         type: BottomNavigationBarType.shifting,
         selectedItemColor: Colors.white,
@@ -55,15 +57,14 @@ class NavigationBottom extends GetWidget <BottomNavigationController>{
               backgroundColor: backGro),
         ],
       ),
-
        */
-    )
-    )) ;
+        )
+        )) ;
   }
 
-Widget  bottomNavigationBar() {
+  Widget  bottomNavigationBar() {
     return GetBuilder<BottomNavigationController>(
-      init: BottomNavigationController(),
+        init: BottomNavigationController(),
         builder: (controller) => BottomNavigationBar(
           items:  [
             BottomNavigationBarItem(
@@ -77,14 +78,14 @@ Widget  bottomNavigationBar() {
           ],
           currentIndex: controller.navigatorValue,
           onTap: (index) => controller.changeSelectedValue(index) ,
-           type: BottomNavigationBarType.shifting,
-           selectedItemColor: Colors.white,
-           unselectedItemColor: Colors.white38,
-           elevation: 0,
-           showSelectedLabels: true,
-           showUnselectedLabels: false,
+          type: BottomNavigationBarType.shifting,
+          selectedItemColor: Colors.white,
+          unselectedItemColor: Colors.white38,
+          elevation: 0,
+          showSelectedLabels: true,
+          showUnselectedLabels: false,
         )
     ) ;
-}
+  }
 
 }

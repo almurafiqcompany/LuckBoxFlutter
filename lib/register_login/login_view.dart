@@ -1008,7 +1008,7 @@ class LoginView extends GetView <LoginController>{
                     MaterialButton(
                       // onPressed: signUp,
                       onPressed: () {
-                       // controller.doLogin() ;
+                        controller.doLogin() ;
                       },
                       color: Colors.white,
                       elevation: 10,

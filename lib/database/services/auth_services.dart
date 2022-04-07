@@ -1,7 +1,9 @@
 import 'dart:convert';
 
+import 'package:get/get.dart';
 import 'package:http/http.dart' as http;
 import 'package:test_bloc/database/models/model_two.dart';
+import 'package:test_bloc/routes/routes.dart';
 
 class AuthServices {
   static UserRegisterModel? userRegisterModel;
@@ -11,65 +13,66 @@ class AuthServices {
   static var client = http.Client();
 
   static Future register(
-      {required name,required email,required password,required phone,required governate}) async {
-    var response =   await client.post(
-      Uri.parse('$baseApi/register'),
-      headers: {'Content-Type ': 'application/json'},
-      body: jsonEncode(<String , String > {
-        'name' : name ,
-        'email' : email ,
-        'password' : password ,
-        'phone' : phone ,
-        'governate' : governate ,}) ,
-    );
-    print('${response} youssssssssef tarek 874874844') ;
-
-    // if(response.statusCode == 200){
-    //   var startOb = response.body ;
-    //   dynamic user = userFromJson(str) ;
-    //
-    //  return  user;
-    //
-    // }
-
-    print('${response.body} youssssssssef tarek 874874844') ;
-
-    if(response.statusCode == 200) {
-      var startObjects = response.body;
-      var user = userFromJson(startObjects) ;
-      print('${user.message} youssssssssef tarek 874874844') ;
-      return user ;
-    }else{
-      return null ;
-    }
-
-
-  }
-
-
-
-
-
-
-  static login({required email, password}) async {
+      {required name,
+        required email,
+        required password,
+        required phone,
+        required governate}) async {
     var response = await client.post(
-      Uri.parse('https://luck-boox.com/api/login'),
-      //   headers: {'Content-Type ' : 'application/json'} ,
-      body: jsonEncode(<String, String>{
+      Uri.parse('$baseApi/register'),
+      body: {
+        'name': name,
         'email': email,
         'password': password,
-      }),
-    );
-
+        'phone': phone,
+        'governate': governate,
+      },
+    ).then((value) {
+      print('hamouda');
+      Get.offAllNamed(
+          AppRoutes.navigate) ;
+    }).catchError((error) {
+      print(error);
+    });
     if (response.statusCode == 200) {
-      var stringObject = response.body;
-       var user = userFromJson(stringObject);
-      userRegisterModel = UserRegisterModel.fromJson(response.body as dynamic)
-          .status as UserRegisterModel;
-      return userRegisterModel.toString();
+      var jsonString = response.body;
+      return userFromJson(jsonString);
+    } else {
+      //show error message
+      return null;
     }
+  //  return response ;
   }
+
+  static Future<void> login({required email,required password}) async {
+    var response = await client.post(
+      Uri.parse('$baseApi/api/login'),
+      body: {
+
+        'email': email,
+        'password': password,
+
+      } , ).then((value) {
+      print('hamouda');
+      Get.offAllNamed(
+          AppRoutes.navigate) ;
+    }).catchError((error) {
+      print(error);
+    }) ;
+    return response ;
+
+
+    // if (response.statusCode == 200) {
+    //   var stringObject = response.body;
+    //   var user = userFromJson(stringObject);
+    //   userRegisterModel = UserRegisterModel.fromJson(response.body as dynamic)
+    //       .status as UserRegisterModel;
+    //   return userRegisterModel.toString();
+    // }
+  }
+
 }
+
 
 
 
